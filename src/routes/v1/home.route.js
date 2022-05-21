@@ -1,38 +1,38 @@
 const express = require('express');
 const auth = require('../../middlewares/auth');
 const validate = require('../../middlewares/validate');
-const userValidation = require('../../validations/user.validation');
-const userController = require('../../controllers/user.controller');
+const homeValidation = require('../../validations/home.validation');
+const homeController = require('../../controllers/home.controller');
 
 const router = express.Router();
 
 router
   .route('/')
-  .post(auth('manageUsers'), validate(userValidation.createUser), userController.createUser)
-  .get(auth('manageUsers'), validate(userValidation.getUsers), userController.getUsers);
+  .post(auth('manageHomes'), validate(homeValidation.createHome), homeController.createHome)
+  .get(auth('manageHomes'), validate(homeValidation.getHomes), homeController.getHomes);
 
 router
-  .route('/:userId')
-  .get(auth('manageUsers'), validate(userValidation.getUser), userController.getUser)
-  .patch(auth('manageUsers'), validate(userValidation.updateUser), userController.updateUser)
-  .delete(auth('manageUsers'), validate(userValidation.deleteUser), userController.deleteUser);
+  .route('/:homeId')
+  .get(auth('manageHomes'), validate(homeValidation.getHome), homeController.getHome)
+  .patch(auth('manageHomes'), validate(homeValidation.updateHome), homeController.updateHome)
+  .delete(auth('manageHomes'), validate(homeValidation.deleteHome), homeController.deleteHome);
 
 module.exports = router;
 
 /**
  * @swagger
  * tags:
- *   name: Users
- *   description: User management and retrieval
+ *   name: Homes
+ *   description: Home management and retrieval
  */
 
 /**
  * @swagger
- * /users:
+ * /homes:
  *   post:
- *     summary: Create a user
- *     description: Only admins can create other users.
- *     tags: [Users]
+ *     summary: Create a home
+ *     description: Only admins can create homes.
+ *     tags: [Homes]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -43,47 +43,30 @@ module.exports = router;
  *             type: object
  *             required:
  *               - name
- *               - email
- *               - password
- *               - role
  *             properties:
  *               name:
  *                 type: string
- *               email:
+ *               address:
  *                 type: string
- *                 format: email
- *                 description: must be unique
- *               password:
- *                 type: string
- *                 format: password
- *                 minLength: 8
- *                 description: At least one number and one letter
- *               role:
- *                  type: string
- *                  enum: [user, admin]
  *             example:
  *               name: fake name
- *               email: fake@example.com
- *               password: password1
- *               role: user
+ *               address: fake address
  *     responses:
  *       "201":
  *         description: Created
  *         content:
  *           application/json:
  *             schema:
- *                $ref: '#/components/schemas/User'
- *       "400":
- *         $ref: '#/components/responses/DuplicateEmail'
+ *                $ref: '#/components/schemas/Home'
  *       "401":
  *         $ref: '#/components/responses/Unauthorized'
  *       "403":
  *         $ref: '#/components/responses/Forbidden'
  *
  *   get:
- *     summary: Get all users
- *     description: Only admins can retrieve all users.
- *     tags: [Users]
+ *     summary: Get all homes
+ *     description: Only admins can retrieve all homes.
+ *     tags: [Homes]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -91,12 +74,7 @@ module.exports = router;
  *         name: name
  *         schema:
  *           type: string
- *         description: User name
- *       - in: query
- *         name: role
- *         schema:
- *           type: string
- *         description: User role
+ *         description: Home name
  *       - in: query
  *         name: sortBy
  *         schema:
@@ -108,7 +86,7 @@ module.exports = router;
  *           type: integer
  *           minimum: 1
  *         default: 10
- *         description: Maximum number of users
+ *         description: Maximum number of homes
  *       - in: query
  *         name: page
  *         schema:
@@ -127,7 +105,7 @@ module.exports = router;
  *                 results:
  *                   type: array
  *                   items:
- *                     $ref: '#/components/schemas/User'
+ *                     $ref: '#/components/schemas/Home'
  *                 page:
  *                   type: integer
  *                   example: 1
@@ -148,11 +126,11 @@ module.exports = router;
 
 /**
  * @swagger
- * /users/{id}:
+ * /homes/{id}:
  *   get:
- *     summary: Get a user
- *     description: Logged in users can fetch only their own user information. Only admins can fetch other users.
- *     tags: [Users]
+ *     summary: Get a home
+ *     description: Logged in users can fetch only their own home information.
+ *     tags: [Homes]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -161,14 +139,14 @@ module.exports = router;
  *         required: true
  *         schema:
  *           type: string
- *         description: User id
+ *         description: Home id
  *     responses:
  *       "200":
  *         description: OK
  *         content:
  *           application/json:
  *             schema:
- *                $ref: '#/components/schemas/User'
+ *                $ref: '#/components/schemas/Home'
  *       "401":
  *         $ref: '#/components/responses/Unauthorized'
  *       "403":
@@ -177,9 +155,9 @@ module.exports = router;
  *         $ref: '#/components/responses/NotFound'
  *
  *   patch:
- *     summary: Update a user
- *     description: Logged in users can only update their own information. Only admins can update other users.
- *     tags: [Users]
+ *     summary: Update a home
+ *     description: Only admins can update homes.
+ *     tags: [Homes]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -188,7 +166,7 @@ module.exports = router;
  *         required: true
  *         schema:
  *           type: string
- *         description: User id
+ *         description: Home id
  *     requestBody:
  *       required: true
  *       content:
@@ -198,28 +176,18 @@ module.exports = router;
  *             properties:
  *               name:
  *                 type: string
- *               email:
+ *               address:
  *                 type: string
- *                 format: email
- *                 description: must be unique
- *               password:
- *                 type: string
- *                 format: password
- *                 minLength: 8
- *                 description: At least one number and one letter
  *             example:
  *               name: fake name
- *               email: fake@example.com
- *               password: password1
+ *               address: fake address
  *     responses:
  *       "200":
  *         description: OK
  *         content:
  *           application/json:
  *             schema:
- *                $ref: '#/components/schemas/User'
- *       "400":
- *         $ref: '#/components/responses/DuplicateEmail'
+ *                $ref: '#/components/schemas/Home'
  *       "401":
  *         $ref: '#/components/responses/Unauthorized'
  *       "403":
@@ -228,9 +196,9 @@ module.exports = router;
  *         $ref: '#/components/responses/NotFound'
  *
  *   delete:
- *     summary: Delete a user
- *     description: Logged in users can delete only themselves. Only admins can delete other users.
- *     tags: [Users]
+ *     summary: Delete a home
+ *     description: Only admins can delete homes.
+ *     tags: [Homes]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -239,7 +207,7 @@ module.exports = router;
  *         required: true
  *         schema:
  *           type: string
- *         description: User id
+ *         description: Home id
  *     responses:
  *       "200":
  *         description: No content

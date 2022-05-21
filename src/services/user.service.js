@@ -15,6 +15,16 @@ const createUser = async (userBody) => {
 };
 
 /**
+ * Create an admin user
+ * @param {Object} userBody
+ * @returns {Promise<User>}
+ */
+const createAdminUser = async (userBody) => {
+  const userData = { ...userBody, role: 'admin' };
+  return createUser(userData);
+};
+
+/**
  * Query for users
  * @param {Object} filter - Mongo filter
  * @param {Object} options - Query options
@@ -81,6 +91,7 @@ const deleteUserById = async (userId) => {
 
 module.exports = {
   createUser,
+  createAdminUser,
   queryUsers,
   getUserById,
   getUserByEmail,

@@ -19,6 +19,20 @@ components:
         name: fake name
         role: user
 
+    Home:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        address:
+          type: string
+      example:
+        id: 5ebac534954b54139806c111
+        name: fake name
+        address: fake address
+
     Token:
       type: object
       properties:

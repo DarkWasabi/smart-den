@@ -66,6 +66,14 @@ userSchema.statics.isEmailTaken = async function (email, excludeUserId) {
 };
 
 /**
+ * Check if there are no existing users
+ * @returns {Promise<boolean>}
+ */
+userSchema.statics.isFirstUser = async function () {
+  return (await this.find().count()) === 0;
+};
+
+/**
  * Check if password matches the user's password
  * @param {string} password
  * @returns {Promise<boolean>}
