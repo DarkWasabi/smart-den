@@ -13,6 +13,11 @@ const homeSchema = mongoose.Schema(
       require: false,
       trim: true,
     },
+    user: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: 'User',
+      required: true,
+    },
   },
   {
     timestamps: true,

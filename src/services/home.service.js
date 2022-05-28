@@ -26,6 +26,16 @@ const queryHomes = async (filter, options) => {
 };
 
 /**
+ * Get home by user
+ * @param {User} user
+ * @returns {Promise<Home>}
+ */
+const getHomesByUser = async (user) => {
+  const homes = await Home.find({ user });
+  return homes;
+};
+
+/**
  * Get home by id
  * @param {ObjectId} id
  * @returns {Promise<Home>}
@@ -67,6 +77,7 @@ const deleteHomeById = async (homeId) => {
 module.exports = {
   createHome,
   queryHomes,
+  getHomesByUser,
   getHomeById,
   updateHomeById,
   deleteHomeById,
