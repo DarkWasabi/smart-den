@@ -4,7 +4,7 @@ const catchAsync = require('../utils/catchAsync');
 const { homeService, deviceService } = require('../services');
 
 const addDevice = catchAsync(async (req, res) => {
-  const device = await homeService.addHomeDeviceById(req.params.homeId, req.body);
+  const device = await homeService.addNewDeviceToHome(req.params.homeId, req.body);
 
   res.status(httpStatus.CREATED).send(device);
 });

@@ -4,7 +4,6 @@ const validate = require('../../middlewares/validate');
 const homeValidation = require('../../validations/home.validation');
 const { homeController, homeDeviceController } = require('../../controllers');
 const deviceValidation = require('../../validations/device.validation');
-const deviceController = require('../../controllers/homeDevice.controller');
 
 const router = express.Router();
 

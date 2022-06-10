@@ -1,7 +1,6 @@
 const httpStatus = require('http-status');
-const { Home, Feature } = require('../models');
+const { Home } = require('../models');
 const { createDevice } = require('./device.service');
-const adapters = require('../devices/adapters');
 const ApiError = require('../utils/ApiError');
 
 /**
@@ -9,8 +8,8 @@ const ApiError = require('../utils/ApiError');
  * @param {Object} homeBody
  * @returns {Promise<Home>}
  */
-const createHome = async (homeBody) => {
-  return Home.create(homeBody);
+const createHome = async (homeBody, user) => {
+  return Home.create({ ...homeBody, users: [user] });
 };
 
 /**
@@ -23,18 +22,16 @@ const createHome = async (homeBody) => {
  * @returns {Promise<QueryResult>}
  */
 const queryHomes = async (filter, options) => {
-  const homes = await Home.paginate(filter, options);
-  return homes;
+  return Home.paginate(filter, options);
 };
 
 /**
- * Get home by user
+ * Get homes by user
  * @param {User} user
  * @returns {Promise<Home[]>}
  */
 const getHomesByUser = async (user) => {
-  const homes = await Home.find({ user });
-  return homes;
+  return Home.find({ users: user.id }).populate('users').populate('devices');
 };
 
 /**
@@ -43,7 +40,7 @@ const getHomesByUser = async (user) => {
  * @returns {Promise<Home>}
  */
 const getHomeById = async (id) => {
-  return Home.findById(id);
+  return Home.findById(id).populate('users').populate('devices');
 };
 
 /**
@@ -77,20 +74,20 @@ const deleteHomeById = async (homeId) => {
 };
 
 /**
- * Delete home by id
- * @param {ObjectId} homeId
+ * Adds device to home
+ * @param {Home|ObjectId} homeOrId
  * @param {Object} updateBody
  * @returns {Promise<Home>}
  */
-const addHomeDeviceById = async (homeId, deviceBody) => {
-  const home = await getHomeById(homeId);
+const addNewDeviceToHome = async (homeOrId, deviceBody) => {
+  const home = homeOrId instanceof Home ? homeOrId : await getHomeById(homeOrId);
   if (!home) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Home not found');
   }
-  const device = await createDevice({ ...deviceBody, home: homeId });
 
-  // home.devices.push(device.id);
-  // home.save();
+  const device = await createDevice({ ...deviceBody, home: home.id });
+  home.devices.push(device.id);
+  home.save();
 
   return device;
 };
@@ -102,5 +99,5 @@ module.exports = {
   getHomeById,
   updateHomeById,
   deleteHomeById,
-  addHomeDeviceById,
+  addNewDeviceToHome,
 };

@@ -13,11 +13,11 @@ const homeSchema = mongoose.Schema(
       require: false,
       trim: true,
     },
-    user: {
+    users: [{
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'User',
       required: true,
-    },
+    }],
     devices: [{
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'Device',

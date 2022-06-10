@@ -37,7 +37,7 @@ const deviceSchema = mongoose.Schema(
     },
     config: {
       type: Map,
-      of: String
+      of: String,
     },
     features: [Feature.schema],
   },

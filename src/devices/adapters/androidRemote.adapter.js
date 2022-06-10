@@ -1,6 +1,8 @@
+const { featureCodes } = require('../features');
+
 const androidRemote = {
   code: 'atv-remote',
-  features: ['powerState'],
+  features: [featureCodes.POWER_STATE_CODE, featureCodes.REMOTE_CONTROL_CODE],
   config: ['ip', 'pairingPort', 'remotePort'],
 };
 

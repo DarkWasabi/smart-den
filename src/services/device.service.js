@@ -59,11 +59,10 @@ const getDevicesByHomeId = async (homeId) => {
 const createDevice = async (deviceBody) => {
   const { adapter } = deviceBody;
   const internalAdapter = adapters(adapter.code);
-  console.log(adapter, internalAdapter);
   if (!internalAdapter) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid adapter code'); // TODO: move to validation
   }
-  const features = internalAdapter.features.map(code => ({
+  const features = internalAdapter.features.map((code) => ({
     code,
     states: [],
   }));
