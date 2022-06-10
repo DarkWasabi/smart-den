@@ -4,3 +4,4 @@ module.exports.tokenService = require('./token.service');
 module.exports.userService = require('./user.service');
 module.exports.homeService = require('./home.service');
 module.exports.socialService = require('./social.service');
+module.exports.deviceService = require('./device.service');

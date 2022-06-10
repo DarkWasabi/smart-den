@@ -1,5 +1,7 @@
 const httpStatus = require('http-status');
-const { Home } = require('../models');
+const { Home, Feature } = require('../models');
+const { createDevice } = require('./device.service');
+const adapters = require('../devices/adapters');
 const ApiError = require('../utils/ApiError');
 
 /**
@@ -28,7 +30,7 @@ const queryHomes = async (filter, options) => {
 /**
  * Get home by user
  * @param {User} user
- * @returns {Promise<Home>}
+ * @returns {Promise<Home[]>}
  */
 const getHomesByUser = async (user) => {
   const homes = await Home.find({ user });
@@ -74,6 +76,25 @@ const deleteHomeById = async (homeId) => {
   return home;
 };
 
+/**
+ * Delete home by id
+ * @param {ObjectId} homeId
+ * @param {Object} updateBody
+ * @returns {Promise<Home>}
+ */
+const addHomeDeviceById = async (homeId, deviceBody) => {
+  const home = await getHomeById(homeId);
+  if (!home) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Home not found');
+  }
+  const device = await createDevice({ ...deviceBody, home: homeId });
+
+  // home.devices.push(device.id);
+  // home.save();
+
+  return device;
+};
+
 module.exports = {
   createHome,
   queryHomes,
@@ -81,4 +102,5 @@ module.exports = {
   getHomeById,
   updateHomeById,
   deleteHomeById,
+  addHomeDeviceById,
 };

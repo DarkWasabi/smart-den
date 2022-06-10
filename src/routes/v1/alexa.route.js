@@ -1,10 +1,9 @@
 const express = require('express');
 const auth = require('../../middlewares/amazonAuth');
+const { alexaController } = require('../../controllers');
 
 const router = express.Router();
 
-router.route('/').get(auth, (req, res) => {
-  res.send(req.user);
-});
+router.route('/discovery').get(auth, alexaController.discovery);
 
 module.exports = router;

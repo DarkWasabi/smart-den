@@ -2,6 +2,7 @@ const express = require('express');
 const authRoute = require('./auth.route');
 const userRoute = require('./user.route');
 const homeRoute = require('./home.route');
+const deviceRoute = require('./device.route');
 const alexaRoute = require('./alexa.route');
 const docsRoute = require('./docs.route');
 const config = require('../../config/config');
@@ -25,6 +26,10 @@ const defaultRoutes = [
     path: '/alexa',
     route: alexaRoute,
   },
+  {
+    path: '/devices',
+    route: deviceRoute,
+  }
 ];
 
 const devRoutes = [

@@ -8,15 +8,6 @@ const createHome = {
   }),
 };
 
-const getHomes = {
-  query: Joi.object().keys({
-    name: Joi.string(),
-    sortBy: Joi.string(),
-    limit: Joi.number().integer(),
-    page: Joi.number().integer(),
-  }),
-};
-
 const getHome = {
   params: Joi.object().keys({
     homeId: Joi.string().custom(objectId),
@@ -43,7 +34,6 @@ const deleteHome = {
 
 module.exports = {
   createHome,
-  getHomes,
   getHome,
   updateHome,
   deleteHome,

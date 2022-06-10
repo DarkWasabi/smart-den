@@ -18,6 +18,10 @@ const homeSchema = mongoose.Schema(
       ref: 'User',
       required: true,
     },
+    devices: [{
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: 'Device',
+    }],
   },
   {
     timestamps: true,
