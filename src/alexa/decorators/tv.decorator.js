@@ -51,7 +51,7 @@ const decorate = (device) => {
     interface: 'Alexa',
     version: '3',
   }];
-  console.log(device.features);
+
   device.features.forEach(feature => capabilities.push(decorateCapability(feature)));
 
   return {
