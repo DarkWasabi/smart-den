@@ -3,7 +3,6 @@ const decorators = require('./decorators');
 
 /**
  * @param {Device} device
- * @returns {Object}
  */
 const decorateEndpoint = (device) => {
   const decorator = decorators[device.type];
@@ -16,7 +15,6 @@ const decorateEndpoint = (device) => {
 
 /**
  * @param {Device[]} devices
- * @returns {Object}
  */
 const discovery = (devices) => {
   const endpoints = devices.map((device) => decorateEndpoint(device))

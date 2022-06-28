@@ -10,7 +10,7 @@ const createHome = catchAsync(async (req, res) => {
 });
 
 const getHomes = catchAsync(async (req, res) => {
-  const result = await homeService.getHomesByUser(req.user);
+  const result = await homeService.getHomesByUserId(req.user._id);
 
   res.send(result);
 });

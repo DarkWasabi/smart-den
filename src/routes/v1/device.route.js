@@ -15,6 +15,13 @@ router
   .get(auth(), validate(deviceValidation.getDevice), deviceController.getDevice)
   .delete(auth(), validate(deviceValidation.deleteDevice), deviceController.deleteDevice);
 
+router
+  .route('/:deviceId/state/:stateCode')
+  .get(auth(), deviceController.getState)
+  .post(auth(), deviceController.setState);
+
+router.post('/:deviceId/authenticate', auth(), deviceController.authenticate);
+
 module.exports = router;
 
 // TODO: add @swagger

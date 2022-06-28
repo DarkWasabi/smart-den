@@ -44,6 +44,10 @@ const userSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    homes: [{
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: 'Home',
+    }],
   },
   {
     timestamps: true,

@@ -6,7 +6,7 @@ const { discovery : alexaDiscovery } = require('../alexa/decorator');
 
 const discovery = catchAsync(async (req, res) => {
   // TODO: make home management, now user can have only one home
-  const home = (await homeService.getHomesByUser(req.user))[0];
+  const home = await homeService.getUserHome(req.user);
 
   if (!home || !home.devices.length) {
     throw new ApiError(httpStatus.NOT_FOUND, 'No devices');

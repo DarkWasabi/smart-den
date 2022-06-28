@@ -49,6 +49,24 @@ const deviceSchema = mongoose.Schema(
 // add plugin that converts mongoose to json
 deviceSchema.plugin(toJSON);
 
+deviceSchema.methods.getConfig = function(key) {
+  return this.adapter.config.get(key);
+}
+deviceSchema.methods.setConfig = function(key, value) {
+  this.adapter.config.set(key, value);
+  this.save();
+}
+deviceSchema.methods.getState = function(state) {
+  return this.features.findOne({ code: state }).states[0];
+}
+deviceSchema.methods.setState = function(state, newValue) {
+  this.features.find({ code: state }).states.push({
+    string: newValue, // TODO: make different state types
+  });
+  this.save();
+}
+
+
 /**
  * @typedef Device
  */

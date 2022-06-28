@@ -1,15 +1,12 @@
 const { Device, Feature } = require('../../models');
-const { featureCodes } = require('../../devices/features')
+const { powerState, remoteControl } = require('../../devices/features')
 
 /**
  * @param {Feature} feature
- * @returns {Object}
  */
 const decorateCapability = (feature) => {
-  console.log(feature);
-
   switch (feature.code) {
-    case featureCodes.POWER_STATE_CODE:
+    case powerState.code:
       return {
         type: 'AlexaInterface',
         interface: 'Alexa.PowerController',
@@ -24,7 +21,7 @@ const decorateCapability = (feature) => {
           retrievable: true,
         },
       };
-    case featureCodes.REMOTE_CONTROL_CODE:
+    case remoteControl.code:
       return {
         type: 'AlexaInterface',
         interface: 'Alexa.KeypadController',
@@ -43,7 +40,6 @@ const decorateCapability = (feature) => {
 
 /**
  * @param {Device} device
- * @returns {Object}
  */
 const decorate = (device) => {
   const capabilities = [{

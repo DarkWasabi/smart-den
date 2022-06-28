@@ -9,6 +9,9 @@ const ApiError = require('../utils/ApiError');
  * @returns {Promise<Home>}
  */
 const createHome = async (homeBody, user) => {
+  if (await getUserHome(user)) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'User is assigned to another home.')
+  }
   return Home.create({ ...homeBody, users: [user] });
 };
 
@@ -26,12 +29,22 @@ const queryHomes = async (filter, options) => {
 };
 
 /**
- * Get homes by user
  * @param {User} user
+ * @returns {Promise<Home>}
+ */
+const getUserHome = async (user) => {
+  const homes = await getHomesByUserId(user.id);
+
+  return homes.pop();
+}
+
+/**
+ * Get homes by user ID
+ * @param {string} userId
  * @returns {Promise<Home[]>}
  */
-const getHomesByUser = async (user) => {
-  return Home.find({ users: user.id }).populate('users').populate('devices');
+const getHomesByUserId = async (userId) => {
+  return Home.find({ users: userId }).populate('users').populate('devices');
 };
 
 /**
@@ -95,9 +108,10 @@ const addNewDeviceToHome = async (homeOrId, deviceBody) => {
 module.exports = {
   createHome,
   queryHomes,
-  getHomesByUser,
+  getHomesByUserId,
   getHomeById,
   updateHomeById,
   deleteHomeById,
   addNewDeviceToHome,
+  getUserHome,
 };

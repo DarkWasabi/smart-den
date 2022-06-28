@@ -1,9 +1,11 @@
-const { featureCodes } = require('../features');
+const { powerState, remoteControl } = require('../features');
+const makeProcess = require('./services/androidRemote.service')
 
 const androidRemote = {
   code: 'atv-remote',
-  features: [featureCodes.POWER_STATE_CODE, featureCodes.REMOTE_CONTROL_CODE],
+  features: [powerState, remoteControl].map(feature => feature.code),
   config: ['ip', 'pairingPort', 'remotePort'],
+  makeProcess,
 };
 
 module.exports = androidRemote;

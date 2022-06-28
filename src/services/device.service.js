@@ -1,10 +1,11 @@
+const httpStatus = require('http-status');
 const findLocalDevices = require('local-devices');
 const oui = require('oui');
 const { Device } = require('../models');
 const { localDevices } = require('../config/localDevices');
 const adapters = require('../devices/adapters');
 const ApiError = require('../utils/ApiError');
-const httpStatus = require('http-status');
+const homeService = require('./home.service');
 
 /**
  * Get devices from local network. // TODO: NOT WORKING properly on Mac OS Docker
@@ -33,7 +34,7 @@ const getLocalDevices = async (address) => {
  * @returns {Promise<Device>}
  */
 const getDeviceById = async (deviceId) => {
-  return Device.findById(deviceId);
+  return await Device.findById(deviceId);
 }
 
 /**
@@ -42,7 +43,7 @@ const getDeviceById = async (deviceId) => {
  * @returns {Promise<Device[]>}
  */
 const getDevicesByHomeId = async (homeId) => {
-  return Device.find({ home: homeId }).populate('home').populate('features');
+  return await Device.find({ home: homeId }).populate('home').populate('features');
 }
 
 /**
@@ -67,7 +68,7 @@ const createDevice = async (deviceBody) => {
     states: [],
   }));
 
-  return Device.create({ ...deviceBody, features });
+  return await Device.create({ ...deviceBody, features });
 }
 
 /**
@@ -84,10 +85,34 @@ const deleteDeviceById = async (deviceId) => {
   return device;
 }
 
+/**
+ * //TODO: add multiple homes support
+ * @param {User} user
+ * @returns {Device[]}
+ */
+const getDevicesByUserId = async (userId) => {
+  const home = (await homeService.getHomesByUserId(userId)).populate('devices').pop();
+
+  return home.devices;
+}
+
+const getDeviceStateByCode = async (deviceId, stateCode) => {
+  // const devices = await Device.find({ _id: deviceId, 'features.code': stateCode });
+  console.log(devices);
+  const devices = await Device.aggregate([{
+    '$match': {
+      '_id': deviceId,
+      'features.code': stateCode,
+    }
+  }]).exec();
+}
+
 module.exports = {
   getLocalDevices,
   getDeviceById,
   getDevicesByHomeId,
   createDevice,
   deleteDeviceById,
+  getDevicesByUserId,
+  getDeviceStateByCode,
 };
