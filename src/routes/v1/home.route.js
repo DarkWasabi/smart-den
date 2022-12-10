@@ -2,23 +2,30 @@ const express = require('express');
 const auth = require('../../middlewares/auth');
 const validate = require('../../middlewares/validate');
 const homeValidation = require('../../validations/home.validation');
-const homeController = require('../../controllers/home.controller');
+const { homeController, homeDeviceController } = require('../../controllers');
+const deviceValidation = require('../../validations/device.validation');
 
 const router = express.Router();
 
 router
   .route('/')
-  .post(auth('manageHomes'), validate(homeValidation.createHome), homeController.createHome)
-  .get(auth('manageHomes'), validate(homeValidation.getHomes), homeController.getHomes);
+  .post(auth(), validate(homeValidation.createHome), homeController.createHome)
+  .get(auth(), homeController.getHomes);
 
 router
   .route('/:homeId')
-  .get(auth('manageHomes'), validate(homeValidation.getHome), homeController.getHome)
-  .patch(auth('manageHomes'), validate(homeValidation.updateHome), homeController.updateHome)
-  .delete(auth('manageHomes'), validate(homeValidation.deleteHome), homeController.deleteHome);
+  .get(auth(), validate(homeValidation.getHome), homeController.getHome)
+  .patch(auth(), validate(homeValidation.updateHome), homeController.updateHome)
+  .delete(auth('deleteHomes'), validate(homeValidation.deleteHome), homeController.deleteHome);
+
+router
+  .route('/:homeId/devices')
+  .post(auth(), validate(deviceValidation.createDevice), homeDeviceController.addDevice)
+  .get(auth(), validate(deviceValidation.getHomeDevices), homeDeviceController.getDevices);
 
 module.exports = router;
 
+// TODO: update @swagger
 /**
  * @swagger
  * tags:
@@ -64,36 +71,11 @@ module.exports = router;
  *         $ref: '#/components/responses/Forbidden'
  *
  *   get:
- *     summary: Get all homes
+ *     summary: Get all user homes
  *     description: Only admins can retrieve all homes.
  *     tags: [Homes]
  *     security:
  *       - bearerAuth: []
- *     parameters:
- *       - in: query
- *         name: name
- *         schema:
- *           type: string
- *         description: Home name
- *       - in: query
- *         name: sortBy
- *         schema:
- *           type: string
- *         description: sort by query in the form of field:desc/asc (ex. name:asc)
- *       - in: query
- *         name: limit
- *         schema:
- *           type: integer
- *           minimum: 1
- *         default: 10
- *         description: Maximum number of homes
- *       - in: query
- *         name: page
- *         schema:
- *           type: integer
- *           minimum: 1
- *           default: 1
- *         description: Page number
  *     responses:
  *       "200":
  *         description: OK

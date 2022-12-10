@@ -1,5 +1,6 @@
 const httpStatus = require('http-status');
 const { Home } = require('../models');
+const { createDevice } = require('./device.service');
 const ApiError = require('../utils/ApiError');
 
 /**
@@ -7,8 +8,11 @@ const ApiError = require('../utils/ApiError');
  * @param {Object} homeBody
  * @returns {Promise<Home>}
  */
-const createHome = async (homeBody) => {
-  return Home.create(homeBody);
+const createHome = async (homeBody, user) => {
+  if (await getUserHome(user)) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'User is assigned to another home.')
+  }
+  return Home.create({ ...homeBody, users: [user] });
 };
 
 /**
@@ -21,18 +25,26 @@ const createHome = async (homeBody) => {
  * @returns {Promise<QueryResult>}
  */
 const queryHomes = async (filter, options) => {
-  const homes = await Home.paginate(filter, options);
-  return homes;
+  return Home.paginate(filter, options);
 };
 
 /**
- * Get home by user
  * @param {User} user
  * @returns {Promise<Home>}
  */
-const getHomesByUser = async (user) => {
-  const homes = await Home.find({ user });
-  return homes;
+const getUserHome = async (user) => {
+  const homes = await getHomesByUserId(user.id);
+
+  return homes.pop();
+}
+
+/**
+ * Get homes by user ID
+ * @param {string} userId
+ * @returns {Promise<Home[]>}
+ */
+const getHomesByUserId = async (userId) => {
+  return Home.find({ users: userId }).populate('users').populate('devices');
 };
 
 /**
@@ -41,7 +53,7 @@ const getHomesByUser = async (user) => {
  * @returns {Promise<Home>}
  */
 const getHomeById = async (id) => {
-  return Home.findById(id);
+  return Home.findById(id).populate('users').populate('devices');
 };
 
 /**
@@ -74,11 +86,32 @@ const deleteHomeById = async (homeId) => {
   return home;
 };
 
+/**
+ * Adds device to home
+ * @param {Home|ObjectId} homeOrId
+ * @param {Object} updateBody
+ * @returns {Promise<Home>}
+ */
+const addNewDeviceToHome = async (homeOrId, deviceBody) => {
+  const home = homeOrId instanceof Home ? homeOrId : await getHomeById(homeOrId);
+  if (!home) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Home not found');
+  }
+
+  const device = await createDevice({ ...deviceBody, home: home.id });
+  home.devices.push(device.id);
+  home.save();
+
+  return device;
+};
+
 module.exports = {
   createHome,
   queryHomes,
-  getHomesByUser,
+  getHomesByUserId,
   getHomeById,
   updateHomeById,
   deleteHomeById,
+  addNewDeviceToHome,
+  getUserHome,
 };

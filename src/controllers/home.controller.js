@@ -4,13 +4,13 @@ const catchAsync = require('../utils/catchAsync');
 const { homeService } = require('../services');
 
 const createHome = catchAsync(async (req, res) => {
-  const home = await homeService.createHome({ ...req.body, user: req.user });
+  const home = await homeService.createHome(req.body, req.user);
 
   res.status(httpStatus.CREATED).send(home);
 });
 
 const getHomes = catchAsync(async (req, res) => {
-  const result = await homeService.getHomesByUser(req.user);
+  const result = await homeService.getHomesByUserId(req.user._id);
 
   res.send(result);
 });
